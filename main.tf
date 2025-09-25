@@ -9,7 +9,7 @@ terraform {
     skip_requesting_account_id  = true
     skip_s3_checksum            = true
     region                      = "eu-central-003"
-    bucket                      = $bucket
+    bucket                      = "bb-eu-s3-private-terraform"
     key                         = "actions-test/terraform.tfstate"
   }
 }
