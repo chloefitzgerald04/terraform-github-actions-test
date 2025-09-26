@@ -50,4 +50,22 @@ jobs:
         - name: Terraform Plan
           id: plan
           run: terraform plan -input=false -no-color -out=tfplan && terraform show -no-color tfplan
-    
+
+
+        - name: Reformat Plan
+          if: steps.plan.outcome == 'success'
+          run: |
+            echo '${{ steps.plan.outputs.stdout || steps.plan.outputs.stderr }}' \
+            | sed -E 's/^([[:space:]]+)([-+])/\2\1/g' > plan.txt          
+        - name: Put Plan in Env Var
+          if: steps.plan.outcome == 'success'
+          run: |
+            PLAN=$(cat plan.txt)
+            echo "PLAN<<EOF" >> $GITHUB_ENV
+            echo "$PLAN" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV 
+        - name: Terraform Apply
+          id: apply
+          continue-on-error: true
+          if: steps.plan.outcome == 'success'
+          run: terraform apply -auto-approve -input=false -no-color tfplan
