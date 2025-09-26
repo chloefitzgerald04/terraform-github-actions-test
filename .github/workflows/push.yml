@@ -32,15 +32,8 @@ jobs:
         - name: Terraform Init
           id: init
           env:
-            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-            ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-            ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-            ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-            RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
-            STORAGE_ACCOUNT: ${{ secrets.STORAGE_ACCOUNT }}
-            CONTAINER_NAME: ${{ secrets.CONTAINER_NAME }}
-            AWS_ACCESS_KEY_ID: "test"
-            AWS_SECRET_ACCESS_KEY: "test"
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           run: terraform init -backend-config="access_key=$AWS_ACCESS_KEY_ID" -backend-config="secret_key=$AWS_SECRET_ACCESS_KEY"
     
     
