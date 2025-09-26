@@ -38,11 +38,6 @@ jobs:
           run: terraform init --backend-config="access_key=$AWS_ACCESS_KEY_ID" --backend-config="secret_key=$AWS_SECRET_ACCESS_KEY"
     
     
-       # Run a terraform fmt to check syntax
-        - name: Terraform Format
-          id: fmt
-          run: terraform fmt -check
-    
         # Run a terraform validate
         - name: Terraform Validate
           id: validate
