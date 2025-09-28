@@ -80,7 +80,7 @@ jobs:
           if: steps.plan.outcome == 'success' && steps.apply.outcome == 'success'
           uses: mshick/add-pr-comment@v1
           with:
-            repo-token: ${{ secrets.CUSTOM_PAT }}
+            repo-token: ${{ secrets.GITHUB_TOKEN }}
             repo-token-user-login: 'github-actions[bot]'
             message: |
               Applying **Infra**:
@@ -93,7 +93,7 @@ jobs:
           if: steps.plan.outcome == 'failure'
           uses: mshick/add-pr-comment@v1
           with:
-            repo-token: ${{ secrets.CUSTOM_PAT }}
+            repo-token: ${{ secrets.GITHUB_TOKEN }}
             repo-token-user-login: 'github-actions[bot]'
             message: |
               Plan failed for **Infra**:
