@@ -3,7 +3,6 @@ name: Push to feature branch
 on:
   push:
     branches:
-      - '*'
       - 'main'
 env:
   TF_LOG: INFO
