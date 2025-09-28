@@ -73,3 +73,45 @@ jobs:
             TF_VAR_token_id: ${{ secrets.TF_VAR_TOKEN_ID }}
             TF_VAR_token_secret: ${{ secrets.TF_VAR_TOKEN_SECRET }}      
           run: terraform apply -auto-approve -input=false -no-color tfplan
+
+
+
+        - name: Post Plan and Apply to GitHub PR
+          if: steps.plan.outcome == 'success' && steps.apply.outcome == 'success'
+          uses: mshick/add-pr-comment@v1
+          with:
+            repo-token: ${{ secrets.CUSTOM_PAT }}
+            repo-token-user-login: 'github-actions[bot]'
+            message: |
+              Applying **Infra**:
+              <details><summary>Show Apply</summary>
+              ```
+              ${{ steps.apply.outputs.stdout }}
+              ```
+              </details>
+        - name: Post Plan Failure
+          if: steps.plan.outcome == 'failure'
+          uses: mshick/add-pr-comment@v1
+          with:
+            repo-token: ${{ secrets.CUSTOM_PAT }}
+            repo-token-user-login: 'github-actions[bot]'
+            message: |
+              Plan failed for **Infra**:
+              <details><summary>Show Plan Fail</summary>
+              ```
+              ${{ steps.plan.outputs.stderr }}
+              ```
+              </details>
+        - name: Post Apply Failure
+          if: steps.apply.outcome == 'failure'
+          uses: mshick/add-pr-comment@v1
+          with:
+            repo-token: ${{ secrets.GITHUB_TOKEN }}
+            repo-token-user-login: 'github-actions[bot]'
+            message: |
+              Apply failed for **Infra**:
+              <details><summary>Show Apply Fail</summary>
+              ```
+              ${{ steps.apply.outputs.stderr }}
+              ```
+              </details>
