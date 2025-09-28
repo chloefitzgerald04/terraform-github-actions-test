@@ -1,0 +1,77 @@
+name: Push to feature branch
+
+on:
+  push:
+    branches:
+      - '*'
+      - 'main'
+env:
+  TF_LOG: INFO
+  TF_INPUT: false
+
+jobs: 
+  check-code:
+    runs-on: self-hosted
+    environment: production
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    # Set the working directory to vnet for the config files
+    defaults:
+        run:
+          shell: bash
+
+    steps:
+        # Checkout the repository to the GitHub Actions runner
+        - name: Checkout
+          uses: actions/checkout@v3
+       # Install the selected version of Terraform CLI 
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v2
+          with:
+            terraform_version: ${{ secrets.TERRAFORM_VERSION }}
+    
+     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+        - name: Terraform Init
+          id: init
+          env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          run: terraform init --backend-config="access_key=$AWS_ACCESS_KEY_ID" --backend-config="secret_key=$AWS_SECRET_ACCESS_KEY"
+    
+    
+        # Run a terraform validate
+        - name: Terraform Validate
+          id: validate
+          # Run even if formatting fails
+          if: success() || failure()
+          run: terraform validate -no-color
+
+
+
+        - name: Terraform Plan
+          id: plan
+          env:
+            TF_VAR_token_id: ${{ secrets.TF_VAR_TOKEN_ID }}
+            TF_VAR_token_secret: ${{ secrets.TF_VAR_TOKEN_SECRET }}           
+          run: terraform plan -input=false -no-color -out=tfplan && terraform show -no-color tfplan
+
+
+        - name: Reformat Plan
+          if: steps.plan.outcome == 'success'
+          run: |
+            echo '${{ steps.plan.outputs.stdout || steps.plan.outputs.stderr }}' \
+            | sed -E 's/^([[:space:]]+)([-+])/\2\1/g' > plan.txt          
+        - name: Put Plan in Env Var
+          if: steps.plan.outcome == 'success'
+          run: |
+            PLAN=$(cat plan.txt)
+            echo "PLAN<<EOF" >> $GITHUB_ENV
+            echo "$PLAN" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV 
+        - name: Terraform Apply
+          id: apply
+          continue-on-error: true
+          if: steps.plan.outcome == 'success'
+          env:
+            TF_VAR_token_id: ${{ secrets.TF_VAR_TOKEN_ID }}
+            TF_VAR_token_secret: ${{ secrets.TF_VAR_TOKEN_SECRET }}      
+          run: terraform apply -auto-approve -input=false -no-color tfplan

@@ -28,7 +28,11 @@ provider "proxmox" {
 }
 
 resource "proxmox_vm_qemu" "arch" {
+<<<<<<< HEAD
     count                     = 0
+=======
+    count                     = 1
+>>>>>>> 4da85ed
     name                      = "cf-pve-cl-01-docker-${count.index + 1}"
     #pxe                       = true
     agent                     = 0
