@@ -85,9 +85,11 @@ jobs:
             message: |
               Applying **Infra**:
               <details><summary>Show Apply</summary>
+              
               ```
               ${{ steps.apply.outputs.stdout }}
               ```
+              
               </details>
         - name: Post Plan Failure
           if: steps.plan.outcome == 'failure'
@@ -98,9 +100,11 @@ jobs:
             message: |
               Plan failed for **Infra**:
               <details><summary>Show Plan Fail</summary>
+              
               ```
               ${{ steps.plan.outputs.stderr }}
               ```
+              
               </details>
         - name: Post Apply Failure
           if: steps.apply.outcome == 'failure'
@@ -111,7 +115,9 @@ jobs:
             message: |
               Apply failed for **Infra**:
               <details><summary>Show Apply Fail</summary>
+              
               ```
               ${{ steps.apply.outputs.stderr }}
               ```
+              
               </details>
