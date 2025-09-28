@@ -53,8 +53,7 @@ jobs:
             TF_VAR_token_id: ${{ secrets.TF_VAR_TOKEN_ID }}
             TF_VAR_token_secret: ${{ secrets.TF_VAR_TOKEN_SECRET }}           
           run: terraform plan -input=false -no-color -out=tfplan && terraform show -no-color tfplan
-
-
+    
         - name: Reformat Plan
           if: steps.plan.outcome == 'success'
           run: |
