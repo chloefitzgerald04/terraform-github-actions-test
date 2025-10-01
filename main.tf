@@ -28,6 +28,7 @@ provider "proxmox" {
 }
 
 module "proxmox_vm" {
+  provider         = "telmate/proxmox"
   source           = "./modules/vms"
 
 }
