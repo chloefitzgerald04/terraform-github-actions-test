@@ -7,7 +7,7 @@ terraform {
   }
 }
 resource "proxmox_vm_qemu" "arch" {
-    count                     = 0
+    count                     = 1
     name                      = "cf-pve-cl-01-docker-${count.index + 1}"
     #pxe                       = true
     agent                     = 1
