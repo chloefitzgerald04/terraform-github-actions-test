@@ -26,3 +26,9 @@ module "proxmox_vm" {
   source           = "./modules/vms"
 
 }
+
+
+module "proxmox_vm_flatcar" {
+  source           = "./modules/flatcar"
+
+}
