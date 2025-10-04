@@ -1,0 +1,47 @@
+variable "default_vm_config" {
+    default = {
+        count                     = 0
+        name                      = "def"
+        pxe                       = "false"
+        agent                     = 1
+        automatic_reboot          = true
+        bios                      = "seabios"
+        boot                      = "order=scsi0;ide2;net0"
+        hotplug                   = "network,disk,usb"
+        kvm                       = true
+        memory                    = "4096"
+        onboot                    = false
+        scsihw                    = "virtio-scsi-pci"
+        target_node               = "pve-02"
+        cores                     = 2
+        sockets                   = 1
+        disks {
+            scsi {
+                scsi0 {
+                    disk {
+                        discard            = true
+                        emulatessd         = true
+                        iothread           = true
+                        size               = 32
+                        storage            = "Ceph"
+                    }
+                }
+            }
+            ide {
+                ide2 {
+                    cdrom {
+                        iso = "NAS:iso/archlinux-2024.06.01-x86_64.iso"
+                    }
+                }
+            }
+        }
+
+        network {
+            bridge    = "vmbr2"
+            firewall  = false
+            link_down = false
+            model     = "virtio"
+        }
+    }
+
+}
