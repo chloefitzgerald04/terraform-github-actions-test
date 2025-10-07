@@ -1,6 +1,6 @@
 terraform {
   required_providers {
-    proxmox = {
+    telmate = {
       source  = "telmate/proxmox"
       version = "3.0.1-rc3"
     }
@@ -17,6 +17,7 @@ terraform {
 }
 
 resource "proxmox_cloud_init_disk" "ci" {
+  provider = telmate
   count     = var.vm_count # just want 1 for now, set to 0 and apply to destroy VM, or more than 1 to increase amount of vms
   name      = var.vm_count > 1 ? "cf-pve-cl-01-flatcar-${count.index + 1}" : "cf-pve-cl-01-flatcar"
   pve_node  = var.target_node
@@ -32,6 +33,7 @@ resource "proxmox_cloud_init_disk" "ci" {
 }
 
 resource "proxmox_vm_qemu" "test_server" {
+  provider = telmate
   count       = var.vm_count
   name        = var.vm_count > 1 ? "cf-pve-cl-01-flatcar-${count.index + 1}" : "cf-pve-cl-01-flatcar"
   target_node = var.target_node

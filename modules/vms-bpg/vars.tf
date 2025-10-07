@@ -49,10 +49,17 @@ variable "iso_vms" {
              "pxe" = true
              "startup" = false
              "bios" = "ovmf"
-             "disk_size" = 16
-             "disk1" = {
-                "size" = 32
+             "scsi" = {
+                "0" = {
+                    "size" = 32
+                    "datastore_id" = "Ceph"
+                }
+                "1" = {
+                    "size" = 33
+                    "datastore_id" = "Ceph"
+                }
              }
+
          }
     }
 }
@@ -75,4 +82,11 @@ variable "clone_vms" {
     #     }
     # }
     default = {}
+}
+
+variable "token_secret" {
+    default = "123abc"
+}
+variable "token_id" {
+    default = "test@pve!test"
 }

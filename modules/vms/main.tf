@@ -1,12 +1,13 @@
 terraform {
   required_providers {
-    proxmox = {
+    telmate = {
       source = "telmate/proxmox"
       version = "3.0.1-rc3"
     }
   }
 }
 resource "proxmox_vm_qemu" "iso_vms" {
+    provider = telmate
     for_each                  = var.iso_vms
     name                      = each.value.name
     pxe                       = try(each.value.pxe, false)
@@ -25,26 +26,40 @@ resource "proxmox_vm_qemu" "iso_vms" {
     full_clone = true
     clone_wait = 0
 
-    disks {
-        scsi {
-            scsi0 {
-                disk {
-                    discard            = true
-                    emulatessd         = true
-                    size               = try(each.value.disk_size, "32")
-                    storage            = "Ceph"
-                }
-            }
-        }    
-        ide {
-            ide2 {
-                cdrom {
-                    iso = try(each.value.iso, null)
-                }
-            }
-        }
-    }
+    # disks {
+    #     scsi {
+    #         scsi0 {
+    #             disk {
+    #                 discard            = true
+    #                 emulatessd         = true
+    #                 size               = try(each.value.disk_size, "32")
+    #                 storage            = "Ceph"
+    #             }
+    #         }
+    #     }    
+    #     ide {
+    #         ide2 {
+    #             cdrom {
+    #                 iso = try(each.value.iso, null)
+    #             }
+    #         }
+    #     }
+    # }
+    # dynamic "disk" {
+    #     for_each = each.value.disk[*]
+    #     content {
+    #         size        = "31"
+    #         type        = "disk"
+    #         slot        = "scsi1"
+    #     }
 
+    # }
+    disk {
+        slot    = "scsi0"
+        size    = "32G"
+        type    = "disk"
+        storage = "local-lvm"
+    }
     network {
         bridge    = try(each.value.network_name, "vmbr2")
         firewall  = false
@@ -54,6 +69,7 @@ resource "proxmox_vm_qemu" "iso_vms" {
 }
 
 resource "proxmox_vm_qemu" "clone_vms" {
+    provider = telmate
     for_each                  = var.clone_vms
     name                      = each.value.name
     agent                     = 1
