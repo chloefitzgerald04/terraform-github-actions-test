@@ -13,9 +13,13 @@ terraform {
     key                         = "actions-test/terraform.tfstate"
   }
   required_providers {
-    proxmox = {
+    telmate = {
       source = "telmate/proxmox"
       version = "3.0.1-rc3"
+    }
+    bpg = {
+      source = "bpg/proxmox"
+      version = "0.84.1"
     }
   }
 }
@@ -23,7 +27,7 @@ terraform {
 
 
 module "proxmox_vm" {
-  source           = "./modules/vms"
+  source           = "./modules/vms-bpg"
 
 }
 

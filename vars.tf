@@ -26,3 +26,4 @@ variable "token_secret" {
 variable "token_id" {
     default = "test@pve!test"
 }
+
