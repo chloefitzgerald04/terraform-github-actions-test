@@ -28,6 +28,7 @@ terraform {
 
 module "proxmox_vm" {
   source           = "./modules/vms-bpg"
+  iso_vms          = var.iso_vms
 
 }
 

@@ -38,30 +38,7 @@ variable "iso_vms" {
 #             "disk_size" = 16
 #         }
 #   }
-    default = {
-         "VM1" = {
-             "name" = "01"
-             "node" = "pve-01"
-             "procs" = 1
-             "mem" = 4096
-             "network_name" = "vmbr2"
-             "iso" = "NAS:iso/archlinux-2024.06.01-x86_64.iso"
-             "pxe" = true
-             "startup" = false
-             "bios" = "ovmf"
-             "scsi" = {
-                "0" = {
-                    "size" = 32
-                    "datastore_id" = "Ceph"
-                }
-                "1" = {
-                    "size" = 33
-                    "datastore_id" = "Ceph"
-                }
-             }
-
-         }
-    }
+    default = {}
 }
 
 
