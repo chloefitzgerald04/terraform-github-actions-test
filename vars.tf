@@ -30,3 +30,6 @@ variable "token_id" {
 variable "iso_vms" {
     default = {}
 }
+variable "default_vm" {
+    default = {}
+}

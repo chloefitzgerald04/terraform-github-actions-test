@@ -29,6 +29,7 @@ terraform {
 module "proxmox_vm" {
   source           = "./modules/vms-bpg"
   iso_vms          = var.iso_vms
+  default_vm       = var.default_vm
 
 }
 

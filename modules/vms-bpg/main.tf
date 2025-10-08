@@ -30,54 +30,68 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
         cores        = 2
         type         = "x86-64-v2-AES"  # recommended for modern CPUs
     }
+
     dynamic "cdrom"{
-        for_each = lookup(each.value, "cdrom", {})
-        iterator = cdrom
+        for_each = lookup(each.value, "cdrom", null) == null ? [] : [each.value.cdrom]
         content {
-            file_id = each.value.cdrom.iso
-            interface = "ide0"
+            file_id = cdrom.value.iso
+            interface = try(cdrom.value.interface, var.default_vm.cdrom.interface, null)
         }
     }
     dynamic "disk" {
-        for_each = lookup(each.value, "scsi", {})
+        for_each = try(each.value.scsi, var.default_vm.scsi, {})
         iterator = data_disk
         content {
-            datastore_id      = data_disk.value["datastore_id"]
-            size              = data_disk.value["size"]
+            datastore_id      = try( data_disk.value["datastore_id"], var.default_vm.scsi[0].datastore_id, null)
+            size              = try( data_disk.value["size"], var.default_vm.scsi[0].size, null)
+            file_format       = try( data_disk.value["file_format"], var.default_vm.scsi[0].file_format, null)
+            discard           = try( data_disk.value["discard"], var.default_vm.scsi[0].discard, null)
             interface         = "scsi${data_disk.key}"
         }
     }
     dynamic "disk" {
-        for_each = lookup(each.value, "virtio", {})
+        for_each = try(each.value.virtio, var.default_vm.virtio, {})
         iterator = data_disk
         content {
-            datastore_id      = data_disk.value["datastore_id"]
-            size              = data_disk.value["size"]
+            datastore_id      = try( data_disk.value["datastore_id"], var.default_vm.virtio[0].datastore_id, null)
+            size              = try( data_disk.value["size"], var.default_vm.virtio[0].size, null)
+            file_format       = try( data_disk.value["file_format"], var.default_vm.virtio[0].file_format, null)
+            discard           = try( data_disk.value["discard"], var.default_vm.virtio[0].discard, null)
             interface         = "virtio${data_disk.key}"
         }
     }
     dynamic "disk" {
-        for_each = lookup(each.value, "sata", {})
+        for_each = try(each.value.sata, var.default_vm.sata, {})
         iterator = data_disk
         content {
-            datastore_id      = data_disk.value["datastore_id"]
-            size              = data_disk.value["size"]
+            datastore_id      = try( data_disk.value["datastore_id"], var.default_vm.sata[0].datastore_id, null)
+            size              = try( data_disk.value["size"], var.default_vm.sata[0].size, null)
+            file_format       = try( data_disk.value["file_format"], var.default_vm.sata[0].file_format, null)
+            discard           = try( data_disk.value["discard"], var.default_vm.sata[0].discard, null)
             interface         = "sata${data_disk.key}"
         }
     }
     dynamic "disk" {
-        for_each = lookup(each.value, "ide", {})
+        for_each = try(each.value.ide, var.default_vm.ide, {})
         iterator = data_disk
         content {
-            datastore_id      = data_disk.value["datastore_id"]
-            size              = data_disk.value["size"]
+            datastore_id      = try( data_disk.value["datastore_id"], var.default_vm.ide[0].datastore_id, null)
+            size              = try( data_disk.value["size"], var.default_vm.ide[0].size, null)
+            file_format       = try( data_disk.value["file_format"], var.default_vm.ide[0].file_format, null)
+            discard           = try( data_disk.value["discard"], var.default_vm.ide[0].discard, null)
             interface         = "ide${data_disk.key + 1}"
         }
     }
-    network_device {
-        bridge    = try(each.value.network_name, "vmbr2")
-        vlan_id   = try(each.value.vlan_id, 10)
-        model     = try(each.value.nic_model, "virtio")
+    dynamic "network_device"{
+        for_each = try(each.value.network_devices, var.default_vm.network_devices[0], {})
+        iterator = nic
+        content {
+            bridge          = try(nic.value["bridge"], var.default_vm.network_devices[0].bridge, null)
+            vlan_id         = try(nic.value["vlan_id"], var.default_vm.network_devices[0].vlan_id, null)
+            model           = try(nic.value["model"], var.default_vm.network_devices[0].model, null)
+            mac_address     = try(nic.value["mac_address"], var.default_vm.network_devices[0].mac_address, null)
+            mtu             = try(nic.value["mtu"], var.default_vm.network_devices[0].mtu, null)
+        }
     }
 }
 
