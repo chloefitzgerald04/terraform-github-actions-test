@@ -27,3 +27,6 @@ variable "token_id" {
     default = "test@pve!test"
 }
 
+variable "iso_vms" {
+    default = {}
+}

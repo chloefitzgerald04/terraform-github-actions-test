@@ -14,7 +14,7 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
     name                      = each.value.name
     #pxe                       = try(each.value.pxe, false)
     agent {
-        enabled = true
+        enabled = false
     }
     reboot_after_update          = true
     bios                      = try(each.value.bios, "seabios")
@@ -30,36 +30,16 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
         cores        = 2
         type         = "x86-64-v2-AES"  # recommended for modern CPUs
     }
-    # disks {
-    #     scsi {
-    #         scsi0 {
-    #             disk {
-    #                 discard            = true
-    #                 emulatessd         = true
-    #                 size               = try(each.value.disk_size, "32")
-    #                 storage            = "Ceph"
-    #             }
-    #         }
-    #     }    
-    #     ide {
-    #         ide2 {
-    #             cdrom {
-    #                 iso = try(each.value.iso, null)
-    #             }
-    #         }
-    #     }
-    # }
-    # dynamic "disk" {
-    #     for_each = each.value.disk[*]
-    #     content {
-    #         size        = "31"
-    #         type        = "disk"
-    #         slot        = "scsi1"
-    #     }
-
-    # }
+    dynamic "cdrom"{
+        for_each = lookup(each.value, "cdrom", {})
+        iterator = cdrom
+        content {
+            file_id = each.value.cdrom.iso
+            interface = "ide0"
+        }
+    }
     dynamic "disk" {
-        for_each = each.value.scsi
+        for_each = lookup(each.value, "scsi", {})
         iterator = data_disk
         content {
             datastore_id      = data_disk.value["datastore_id"]
@@ -67,24 +47,33 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
             interface         = "scsi${data_disk.key}"
         }
     }
-    # dynamic "disk" {
-    #     for_each = each.value.sata
-    #     iterator = data_disk
-    #     content {
-    #         datastore_id      = data_disk.value["datastore_id"]
-    #         size              = data_disk.value["size"]
-    #         interface         = "sata${data_disk.key}"
-    #     }
-    # }
-
-
-
-
-    # disk {
-    #     datastore_id = "Ceph"
-    #     interface    = "scsi0"
-    #     size         = 8
-    # }
+    dynamic "disk" {
+        for_each = lookup(each.value, "virtio", {})
+        iterator = data_disk
+        content {
+            datastore_id      = data_disk.value["datastore_id"]
+            size              = data_disk.value["size"]
+            interface         = "virtio${data_disk.key}"
+        }
+    }
+    dynamic "disk" {
+        for_each = lookup(each.value, "sata", {})
+        iterator = data_disk
+        content {
+            datastore_id      = data_disk.value["datastore_id"]
+            size              = data_disk.value["size"]
+            interface         = "sata${data_disk.key}"
+        }
+    }
+    dynamic "disk" {
+        for_each = lookup(each.value, "ide", {})
+        iterator = data_disk
+        content {
+            datastore_id      = data_disk.value["datastore_id"]
+            size              = data_disk.value["size"]
+            interface         = "ide${data_disk.key + 1}"
+        }
+    }
     network_device {
         bridge    = try(each.value.network_name, "vmbr2")
         vlan_id   = try(each.value.vlan_id, 10)
