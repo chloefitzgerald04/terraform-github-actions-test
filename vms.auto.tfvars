@@ -50,8 +50,8 @@ default_vm = {
          "network_devices" = {
             "0" = {
                 "bridge" = "vmbr2"
-                "vlan_id" = "10"
                 "model" = "virtio"
+                "vlan_id" = 0
             }
          }
 
@@ -61,29 +61,23 @@ default_vm = {
 iso_vms= {
      "VM1" = {
          "name" = "01"
-         "node" = "pve-01"
+         "node" = "pve-02"
          "cpu" = {
             "vcpus" = 2
          }
          "memory" = {
             "dedicated" = 4096
          }
-         "pxe" = true
+         #"pxe" = true
+         "clone" = "108"
          "bios" = "seabios"
-         "cdrom" = {
-             "iso" = "NAS:iso/archlinux-2024.06.01-x86_64.iso" 
-         }
+         #"cdrom" = {
+         #    "iso" = "NAS:iso/archlinux-2024.06.01-x86_64.iso" 
+         #}
          "scsi" = {
             "0" = {
                 "size" = 33
                 "datastore_id" = "Ceph"
-            }
-         }
-         "network_devices" = {
-            "1" = {
-                "bridge" = "vmbr2"
-                "vlan_id" = "10"
-                "model" = "e1000e"
             }
          }
          
