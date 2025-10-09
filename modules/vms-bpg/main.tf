@@ -19,18 +19,18 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
     node_name                 = try(each.value.node, var.default_vm.node, null)
     
     reboot_after_update       = try(each.value.rebootafterupdate, var.default_vm.rebootafterupdate, null)
+    stop_on_destroy           = try(var.default_vm.stopondestroy, null)
     bios                      = try(each.value.bios, var.default_vm.bios, null)
     
     boot_order                = try(each.value.bootorder, var.default_vm.bootorder, null)
     on_boot                   = try(each.value.on_boot, var.default_vm.on_boot, null)
 
     dynamic "clone" {
-        for_each = try(each.value.clone, var.default_vm.clone) != null ? [1] : []
+        for_each = try(each.value.clone, var.default_vm.clone) != false && try(each.value.pxe) != false? [1] : []
         content {
-             vm_id          = try(each.value.clone, var.default_vm.clone)
+             vm_id            = try(each.value.clone, var.default_vm.clone)
         }
     }
-
     ### RESOURCES
 
     machine = try(each.value.machine, var.default_vm.machine, null)

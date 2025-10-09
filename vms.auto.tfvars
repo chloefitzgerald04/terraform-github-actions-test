@@ -5,6 +5,7 @@ default_vm = {
          "description"                                          = "Default config for vm"
          "agent"                                                = false
          "on_boot"                                              = true
+         "stopondestroy"                                        = true
          "bootorder"                                            = ["scsi0", "ide0", "net0"]
          "startup" = {
              "order"                                            = "3"
@@ -41,7 +42,7 @@ default_vm = {
          "stop_on_destroy"                                      = true
          "startup"                                              = false
          "boot_order"                                           = ["scsi0", "ide2", "net0"]
-         #"clone" = 
+         "clone"                                                = false
          "pxe"                                                  = true
          "cdrom" = {
              "iso"                                              = "NAS:iso/archlinux-2024.06.01-x86_64.iso" 
@@ -68,17 +69,26 @@ iso_vms= {
          "memory" = {
             "dedicated" = 4096
          }
-         #"pxe" = true
-         "clone" = "108"
-         "bios" = "seabios"
+         "pxe" = true
+         #"clone" = "108"
+         "bios" = "ovmf"
+         "tpm" = {
+            "enabled" = true
+         }
          #"cdrom" = {
          #    "iso" = "NAS:iso/archlinux-2024.06.01-x86_64.iso" 
          #}
-         "scsi" = {
+         "sata" = {
             "0" = {
-                "size" = 33
+                "size" = 64
                 "datastore_id" = "Ceph"
             }
+         }
+         "network_devices" = {
+            "0" = {
+               "model" = "e1000e"
+            }
+
          }
          
      }
