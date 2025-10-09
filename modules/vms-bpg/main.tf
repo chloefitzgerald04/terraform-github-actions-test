@@ -11,33 +11,68 @@ terraform {
 resource "proxmox_virtual_environment_vm" "iso_vms" {
     provider = bpg
     for_each                  = var.iso_vms
+
+    ### PVE Options
+
     name                      = each.value.name
-    #pxe                       = try(each.value.pxe, false)
-    agent {
-        enabled = false
-    }
-    reboot_after_update          = true
-    bios                      = try(each.value.bios, "seabios")
-    boot_order                = ["scsi0", "ide2", "net0"]
-    memory {
-        dedicated = try(each.value.mem, "4096")
-    }
-    on_boot                    = try(each.value.startup, true)
-    #interface                    = "virtio-scsi-pci"
-    node_name                 = each.value.node
+    description               = try(each.value.description, var.default_vm.description, null)
+    node_name                 = try(each.value.node, var.default_vm.node, null)
+    
+    reboot_after_update       = try(each.value.rebootafterupdate, var.default_vm.rebootafterupdate, null)
+    bios                      = try(each.value.bios, var.default_vm.bios, null)
+    
+    boot_order                = try(each.value.bootorder, var.default_vm.bootorder, null)
+    on_boot                   = try(each.value.on_boot, var.default_vm.on_boot, null)
+
+    ### RESOURCES
+
+    machine = try(each.value.machine, var.default_vm.machine, null)
 
     cpu {
-        cores        = 2
-        type         = "x86-64-v2-AES"  # recommended for modern CPUs
+        cores                 = try(each.value.cpu.vcpus, var.default_vm.cpu.vcpus, null)
+        sockets               = try(each.value.cpu.sockets, var.default_vm.cpu.sockets, null)
+        type                  = try(each.value.cpu.type, var.default_vm.cpu.type, null)
     }
+
+    memory {
+        dedicated             = try(each.value.memory.dedicated, var.default_vm.memory.dedicated, null)
+        floating              = try(each.value.memory.floating, var.default_vm.memory.floating, null)
+    }
+
+    operating_system {
+        type                  = try(each.value.os, var.default_vm.os, null)
+    }
+
+    ### UEFI Options
+
+    dynamic "tpm_state" {
+        for_each = try(each.value.tpm.enabled, var.default_vm.tpm.enabled) == true ? [1] : []
+        content {
+             version          = try(each.value.tpm.version, var.default_vm.tpm.version)
+             datastore_id     = try(each.value.tpm.datastore_id, var.default_vm.tpm.datastore_id)
+        }
+    }
+    # only sets if the bios is set to ovmf as seabios doesn't require this
+    dynamic "efi_disk" {
+        for_each = each.value.bios == "ovmf" ? [1] : []
+        content {
+             datastore_id     = try(each.value.efi-disk.datastore_id, var.default_vm.efi-disk.datastore_id, null)
+        }
+    }
+
+
+    ### DISKS
+
+    scsi_hardware             = try(each.value.scsi_hardware, var.default_vm.scsi_hardware, null)
 
     dynamic "cdrom"{
         for_each = lookup(each.value, "cdrom", null) == null ? [] : [each.value.cdrom]
         content {
-            file_id = cdrom.value.iso
-            interface = try(cdrom.value.interface, var.default_vm.cdrom.interface, null)
+            file_id           = cdrom.value.iso
+            interface         = try(cdrom.value.interface, var.default_vm.cdrom.interface, null)
         }
     }
+
     dynamic "disk" {
         for_each = try(each.value.scsi, var.default_vm.scsi, {})
         iterator = data_disk
@@ -82,6 +117,9 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
             interface         = "ide${data_disk.key + 1}"
         }
     }
+
+    ### NETWORK Adapters
+
     dynamic "network_device"{
         for_each = try(each.value.network_devices, var.default_vm.network_devices[0], {})
         iterator = nic
@@ -95,3 +133,5 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
     }
 }
 
+######################### -- NETWORK -- #########################
+#################################################################
