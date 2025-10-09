@@ -24,6 +24,13 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
     boot_order                = try(each.value.bootorder, var.default_vm.bootorder, null)
     on_boot                   = try(each.value.on_boot, var.default_vm.on_boot, null)
 
+    dynamic "clone" {
+        for_each = try(each.value.clone, var.default_vm.clone) != null ? [1] : []
+        content {
+             vm_id          = try(each.value.clone, var.default_vm.clone)
+        }
+    }
+
     ### RESOURCES
 
     machine = try(each.value.machine, var.default_vm.machine, null)
@@ -121,17 +128,19 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
     ### NETWORK Adapters
 
     dynamic "network_device"{
-        for_each = try(each.value.network_devices, var.default_vm.network_devices[0], {})
+        for_each = try(each.value.network_devices, var.default_vm.network_devices, {})
         iterator = nic
         content {
-            bridge          = try(nic.value["bridge"], var.default_vm.network_devices[0].bridge, null)
-            vlan_id         = try(nic.value["vlan_id"], var.default_vm.network_devices[0].vlan_id, null)
-            model           = try(nic.value["model"], var.default_vm.network_devices[0].model, null)
-            mac_address     = try(nic.value["mac_address"], var.default_vm.network_devices[0].mac_address, null)
-            mtu             = try(nic.value["mtu"], var.default_vm.network_devices[0].mtu, null)
+             bridge          = try(nic.value["bridge"], var.default_vm.network_devices[0].bridge, null)
+             vlan_id         = try(nic.value["vlan_id"], var.default_vm.network_devices[0].vlan_id, null)
+             model           = try(nic.value["model"], var.default_vm.network_devices[0].model, null)
+             mac_address     = try(nic.value["mac_address"], var.default_vm.network_devices[0].mac_address, null)
+             mtu             = try(nic.value["mtu"], var.default_vm.network_devices[0].mtu, null)
+            # bridge          = try(nic.value["bridge"], var.default_vm.network_devices.0.bridge, null)
+            # vlan_id         = try(nic.value["vlan_id"], var.default_vm.network_devices.0.vlan_id, null)
+            # model           = try(nic.value["model"], var.default_vm.network_devices.0.model, null)
+            # mac_address     = try(nic.value["mac_address"], var.default_vm.network_devices.0.mac_address, null)
+            # mtu             = try(nic.value["mtu"], var.default_vm.network_devices.0.mtu, null)
         }
     }
 }
-
-######################### -- NETWORK -- #########################
-#################################################################
