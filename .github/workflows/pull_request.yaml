@@ -7,8 +7,9 @@ env:
   TF_INPUT: false
 
 jobs: 
-  check-code:
-    runs-on: self-hosted
+  terraform-plan:
+    runs-on: ubuntu-latest
+    name: 'Terraform Plan'
     environment: production
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     # Set the working directory to vnet for the config files
@@ -20,11 +21,11 @@ jobs:
         # Checkout the repository to the GitHub Actions runner
         - name: Checkout
           uses: actions/checkout@v3
-       # Install the selected version of Terraform CLI 
+       # Install the latest version of Terraform CLI 
         - name: Setup Terraform
           uses: hashicorp/setup-terraform@v2
           with:
-            terraform_version: ${{ secrets.TERRAFORM_VERSION }}
+            terraform_wrapper: false
     
      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
         - name: Terraform Init
@@ -50,7 +51,19 @@ jobs:
             TF_VAR_token_id: ${{ secrets.TF_VAR_TOKEN_ID }}
             TF_VAR_token_secret: ${{ secrets.TF_VAR_TOKEN_SECRET }}           
           run: terraform plan -input=false -no-color -out=tfplan && terraform show -no-color tfplan
-        
+          
+        - name: Run Checkov action
+          id: checkov
+          uses: bridgecrewio/checkov-action@master
+          with: 
+            framework: terraform
+            
+        - name: Upload SARIF file
+          if: success() || failure()
+          uses: github/codeql-action/upload-sarif@v3
+          with:
+            sarif_file: results.sarif
+            category: checkov
     
         - name: Add Plan Comment
           if: steps.plan.outcome == 'success'
