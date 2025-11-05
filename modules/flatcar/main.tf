@@ -44,7 +44,9 @@ resource "proxmox_vm_qemu" "test_server" {
   bios = "seabios" 
   os_type = "host"
 
-  cores   = var.cores
+  cpu   {
+    cores = var.cores
+  }
   sockets = 1
   cpu     = var.cpu
   memory  = var.memory
@@ -77,6 +79,7 @@ resource "proxmox_vm_qemu" "test_server" {
     }
 
   network {
+    id = 0
     model  = "virtio"
     bridge = var.network_bridge
     tag    = var.vlan
