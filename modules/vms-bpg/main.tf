@@ -26,9 +26,9 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
     on_boot                   = try(each.value.on_boot, var.default_vm.on_boot, null)
 
     dynamic "clone" {
-        for_each = try(each.value.clone, var.default_vm.clone) != false && try(each.value.pxe) != false? [1] : []
+        for_each = try(each.value.clone, var.default_vm.clone) != false && try(each.value.pxe) != true? [1] : []
         content {
-             vm_id            = try(each.value.clone, var.default_vm.clone)
+             vm_id            = try(each.value.clone, var.default_vm.clone, null)
         }
     }
     ### RESOURCES

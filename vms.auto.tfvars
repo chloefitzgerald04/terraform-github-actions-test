@@ -25,24 +25,24 @@ default_vm = {
          "scsi" = {
             "0" = {
                 "size"                                          = 32
-                "datastore_id"                                  = "Ceph"
+                "datastore_id"                                  = "local-lvm"
                 "discard"                                       = "on"
             }
          }
          "bios"                                                 = "seabios" # or ovmf
          "efi-disk" = { # Required if bios set to ovmf
-            "datastore_id"                                      = "Ceph"
+            "datastore_id"                                      = "local-lvm"
          }
          "rebootafterupdate"                                    = "true"
          "tpm" = {
             "enabled"                                           = false
             "version"                                           = "v2.0"
-            "datastore_id"                                      = "Ceph"
+            "datastore_id"                                      = "local-lvm"
          }
          "stop_on_destroy"                                      = true
          "startup"                                              = false
          "boot_order"                                           = ["scsi0", "ide2", "net0"]
-         "clone"                                                = false
+         "clone"                                                = "100"
          "pxe"                                                  = true
          "cdrom" = {
              "iso"                                              = "NAS:iso/archlinux-2024.06.01-x86_64.iso" 
@@ -50,7 +50,7 @@ default_vm = {
          }
          "network_devices" = {
             "0" = {
-                "bridge" = "vmbr2"
+                "bridge" = "vmbr0"
                 "model" = "virtio"
                 "vlan_id" = 0
             }
@@ -62,7 +62,7 @@ default_vm = {
 iso_vms= {
      "VM1" = {
          "name" = "01"
-         "node" = "pve-02"
+         "node" = "SA-MS01"
          "cpu" = {
             "vcpus" = 2
          }
@@ -70,20 +70,20 @@ iso_vms= {
             "dedicated" = 4096
          }
          "pxe" = true
-         #"clone" = "108"
-         "bios" = "ovmf"
+         "clone" = "100"
+         "bios" = "seabios"
          "tpm" = {
-            "enabled" = true
+            "enabled" = false
          }
          #"cdrom" = {
          #    "iso" = "NAS:iso/archlinux-2024.06.01-x86_64.iso" 
          #}
-         "sata" = {
-            "0" = {
-                "size" = 64
-                "datastore_id" = "Ceph"
-            }
-         }
+         # "sata" = {
+         #    "0" = {
+         #        "size" = 32
+         #        "datastore_id" = "local-lvm"
+         #    }
+         # }
          "network_devices" = {
             "0" = {
                "model" = "e1000e"
