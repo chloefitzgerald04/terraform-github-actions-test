@@ -48,7 +48,6 @@ resource "proxmox_vm_qemu" "test_server" {
     cores = var.cores
     type     = var.cpu
   }
-  sockets = 1
   memory  = var.memory
   onboot  = true
   scsihw  = "virtio-scsi-single"
