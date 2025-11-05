@@ -9,8 +9,9 @@ env:
   TF_INPUT: false
 
 jobs: 
-  check-code:
-    runs-on: self-hosted
+  terraform-apply:
+    runs-on: ubuntu-latest
+    name: 'Terraform apply'
     environment: production
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     # Set the working directory to vnet for the config files
@@ -19,6 +20,12 @@ jobs:
           shell: bash
 
     steps:
+        # Connects runner to network
+        - run: |
+              sudo apt install resolvconf wireguard
+              echo "${{ secrets.WG_CONFIG }}" > wg.conf
+              sudo chmod 600 wg.conf
+              sudo wg-quick up ./wg.conf
         # Checkout the repository to the GitHub Actions runner
         - name: Checkout
           uses: actions/checkout@v3

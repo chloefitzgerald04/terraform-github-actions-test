@@ -18,7 +18,7 @@ jobs:
           shell: bash
 
     steps:
-        # Connects runner to 
+        # Connects runner to network
         - run: |
               sudo apt install resolvconf wireguard
               echo "${{ secrets.WG_CONFIG }}" > wg.conf
