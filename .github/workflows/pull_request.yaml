@@ -19,11 +19,11 @@ jobs:
 
     steps:
         # Connects runner to 
-        # - run: |
-        #       sudo apt install resolvconf wireguard
-        #       echo "${{ secrets.WG_CONFIG }}" > wg.conf
-        #       sudo chmod 600 wg.conf
-        #       sudo wg-quick up ./wg.conf
+        - run: |
+              sudo apt install resolvconf wireguard
+              echo "${{ secrets.WG_CONFIG }}" > wg.conf
+              sudo chmod 600 wg.conf
+              sudo wg-quick up ./wg.conf
         # Checkout the repository to the GitHub Actions runner
         - name: Checkout
           uses: actions/checkout@v3
