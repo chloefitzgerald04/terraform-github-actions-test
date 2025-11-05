@@ -2,7 +2,7 @@ terraform {
   required_providers {
     telmate = {
       source  = "telmate/proxmox"
-      version = "3.0.1-rc3"
+      version = "3.0.2-rc05"
     }
     ct = {
       source  = "poseidon/ct"
@@ -44,9 +44,10 @@ resource "proxmox_vm_qemu" "test_server" {
   bios = "seabios" 
   os_type = "host"
 
-  cores   = var.cores
-  sockets = 1
-  cpu     = var.cpu
+  cpu   {
+    cores = var.cores
+    type     = var.cpu
+  }
   memory  = var.memory
   onboot  = true
   scsihw  = "virtio-scsi-single"
@@ -77,6 +78,7 @@ resource "proxmox_vm_qemu" "test_server" {
     }
 
   network {
+    id = 0
     model  = "virtio"
     bridge = var.network_bridge
     tag    = var.vlan

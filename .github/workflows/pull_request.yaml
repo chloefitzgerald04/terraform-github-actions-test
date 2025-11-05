@@ -18,7 +18,7 @@ jobs:
           shell: bash
 
     steps:
-        # Connects runner to 
+        # Connects runner to network
         - run: |
               sudo apt install resolvconf wireguard
               echo "${{ secrets.WG_CONFIG }}" > wg.conf
@@ -31,7 +31,7 @@ jobs:
         - name: Setup Terraform
           uses: hashicorp/setup-terraform@v2
           with:
-            terraform_wrapper: false
+            terraform_version: "1.13.1"
     
      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
         - name: Terraform Init
