@@ -25,6 +25,7 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
     boot_order                = try(each.value.bootorder, var.default_vm.bootorder, null)
     on_boot                   = try(each.value.on_boot, var.default_vm.on_boot, null)
 
+    template = try(each.value.template, var.default_vm.template, null)
     dynamic "clone" {
         for_each = try(each.value.clone, var.default_vm.clone) != false && try(each.value.pxe) != true? [1] : []
         content {

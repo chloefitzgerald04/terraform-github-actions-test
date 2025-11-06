@@ -7,6 +7,7 @@ default_vm = {
          "on_boot"                                              = true
          "stopondestroy"                                        = true
          "bootorder"                                            = ["scsi0", "ide0", "net0"]
+         "template"                                             = false
          "startup" = {
              "order"                                            = "3"
              "up_delay"                                         = "60"
