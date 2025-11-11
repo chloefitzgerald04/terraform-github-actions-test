@@ -23,13 +23,13 @@ default_vm = {
             "floating"                                          = 0
          }
          "scsi_hardware"                                        = "virtio-scsi-pci"
-         "scsi" = {
-            "0" = {
-                "size"                                          = 32
-                "datastore_id"                                  = "local-lvm"
-                "discard"                                       = "on"
-            }
-         }
+         # "scsi" = {
+         #    "0" = {
+         #        "size"                                          = 32
+         #        "datastore_id"                                  = "local-lvm"
+         #        "discard"                                       = "on"
+         #    }
+         # }
          "bios"                                                 = "seabios" # or ovmf
          "efi-disk" = { # Required if bios set to ovmf
             "datastore_id"                                      = "local-lvm"
@@ -62,6 +62,7 @@ default_vm = {
 
 iso_vms= {
      "VM1" = {
+         "disabled" = true
          "name" = "01"
          "node" = "SA-MS01"
          "cpu" = {
@@ -85,11 +86,35 @@ iso_vms= {
          #        "datastore_id" = "local-lvm"
          #    }
          # }
+         
          "network_devices" = {
             "0" = {
                "model" = "e1000e"
             }
 
+         }
+         
+     }
+     "flatcar-template" = {
+         "name" = "flatcar-template"
+         "node" = "SA-MS01"
+         "cpu" = {
+            "vcpus" = 2
+         }
+         "memory" = {
+            "dedicated" = 4096
+         }
+         "import" = {
+               #"import_from" = "https://stable.release.flatcar-linux.net/amd64-usr/current/flatcar_production_proxmoxve_image.img"
+               "import_from"  = "https://stable.release.flatcar-linux.net/amd64-usr/current/flatcar_production_kubevirt_image.qcow2"
+               "datastore_id" = "local-lvm"
+         }
+         "pxe" = true
+         "bios" = "seabios"
+         "network_devices" = {
+            "0" = {
+               "model" = "e1000e"
+            }
          }
          
      }

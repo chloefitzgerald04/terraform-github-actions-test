@@ -8,9 +8,23 @@ terraform {
 }
 
 
+### Only present if there is an "import" variable in the vm config in tfvars file
+resource "proxmox_virtual_environment_download_file" "imported_disk" {
+    provider                  = bpg
+    for_each                  = {for k, v in var.iso_vms : k => v if contains(keys(v), "import")}
+    content_type              = "import"
+    datastore_id              = "local"
+    file_name                 = "${each.value.name}.qcow2"
+    node_name                 = try(each.value.node, var.default_vm.node, null)
+    url                       = try(each.value.import.import_from, null)
+    #url          = "https://cloud.centos.org/centos/8-stream/x86_64/images/CentOS-Stream-GenericCloud-8-latest.x86_64.qcow2"
+}
+
+
 resource "proxmox_virtual_environment_vm" "iso_vms" {
-    provider = bpg
-    for_each                  = var.iso_vms
+    provider                  = bpg
+    # IF "disabled" variable added into vm config at any point then the config is not applied / deleted depending if resource has already been created.
+    for_each                  = {for k, v in var.iso_vms : k => v if !contains(keys(v), "disabled")}
 
     ### PVE Options
 
@@ -81,6 +95,15 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
         }
     }
 
+    dynamic "disk" {
+        for_each = try(each.value.import, {})
+        iterator = import
+        content {
+            interface         = "scsi0"
+            import_from       = proxmox_virtual_environment_download_file.imported_disk[each.value.name].id
+            size = 20
+        }
+    }
     dynamic "disk" {
         for_each = try(each.value.scsi, var.default_vm.scsi, {})
         iterator = data_disk
