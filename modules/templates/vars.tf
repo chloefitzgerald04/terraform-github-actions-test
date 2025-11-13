@@ -1,11 +1,8 @@
-variable "default_vm"{
+variable "custom_templates"{
     default = {}
 }
 
-variable "iso_vms" {
-    default = {}
-}
-variable "custom_templates" {
+variable "default_templates" {
     default = {}
 }
 
@@ -22,7 +19,3 @@ variable "token_id" {
     default = "test@pve!test"
 }
 
-
-variable "template_id" {
-    default = {}
-}

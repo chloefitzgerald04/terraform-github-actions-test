@@ -33,3 +33,17 @@ variable "iso_vms" {
 variable "default_vm" {
     default = {}
 }
+
+variable "custom_templates" {
+    default = {}
+}
+
+variable "default_templates" {
+    default = {}
+}
+
+variable "template_id" {
+    default = {}
+}
+
+

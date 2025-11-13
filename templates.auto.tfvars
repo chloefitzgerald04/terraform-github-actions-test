@@ -1,4 +1,4 @@
-default_vm = {
+default_templates = {
          "node"                                                 = "pve-01"
          "os"                                                   = "l26"
          "machine"                                              = "pc" # pc (i440FX) or q35
@@ -56,57 +56,24 @@ default_vm = {
                 "vlan_id" = 0
             }
          }
-
-        
 }
 
-iso_vms= {
-     "VM1" = {
-         "disabled" = true
-         "name" = "01"
+
+custom_templates = {
+     "flatcar-template" = {
+         "name" = "flatcar-template"
          "node" = "SA-MS01"
          "cpu" = {
             "vcpus" = 2
          }
          "memory" = {
             "dedicated" = 4096
+         }
+         "import" = {
+               "import_from" = "https://stable.release.flatcar-linux.net/amd64-usr/current/flatcar_production_proxmoxve_image.img"
+               "datastore_id" = "local-lvm"
          }
          "pxe" = true
-         "clone" = "100"
-         "bios" = "seabios"
-         "tpm" = {
-            "enabled" = false
-         }
-         #"cdrom" = {
-         #    "iso" = "NAS:iso/archlinux-2024.06.01-x86_64.iso" 
-         #}
-         # "sata" = {
-         #    "0" = {
-         #        "size" = 32
-         #        "datastore_id" = "local-lvm"
-         #    }
-         # }
-         
-         "network_devices" = {
-            "0" = {
-               "model" = "e1000e"
-            }
-
-         }
-         
-     }
-     "flatcar-template2" = {
-         "name" = "flatcar-template2"
-         "node" = "SA-MS01"
-         "template" = true
-         "cpu" = {
-            "vcpus" = 2
-         }
-         "memory" = {
-            "dedicated" = 4096
-         }
-         "clone" = "flatcar-template"
-         "pxe" = false
          "bios" = "seabios"
          "network_devices" = {
             "0" = {
