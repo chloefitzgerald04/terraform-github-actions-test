@@ -95,21 +95,18 @@ iso_vms= {
          }
          
      }
-     "flatcar-template" = {
-         "name" = "flatcar-template"
+     "flatcar-template2" = {
+         "name" = "flatcar-template2"
          "node" = "SA-MS01"
+         "template" = true
          "cpu" = {
             "vcpus" = 2
          }
          "memory" = {
             "dedicated" = 4096
          }
-         "import" = {
-               #"import_from" = "https://stable.release.flatcar-linux.net/amd64-usr/current/flatcar_production_proxmoxve_image.img"
-               "import_from"  = "https://stable.release.flatcar-linux.net/amd64-usr/current/flatcar_production_kubevirt_image.qcow2"
-               "datastore_id" = "local-lvm"
-         }
-         "pxe" = true
+         "clone" = "flatcar-template"
+         "pxe" = false
          "bios" = "seabios"
          "network_devices" = {
             "0" = {
