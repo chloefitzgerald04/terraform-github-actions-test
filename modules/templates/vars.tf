@@ -8,3 +8,6 @@ variable "default_templates" {
 
 
 
+variable "imported_disk" {
+    default = {}
+}

@@ -42,5 +42,15 @@ variable "default_templates" {
     default = {}
 }
 
+variable "import_disks" {
+    default = {}
+}
+variable "default_import" {
+    default = {}
+}
+
+variable "imported_disk" {
+    default = {}
+}
 
 

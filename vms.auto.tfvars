@@ -62,6 +62,7 @@ default_vm = {
 
 iso_vms= {
      "VM1" = {
+         "disabled" = true
          "name" = "01"
          "node" = "SA-MS01"
          "cpu" = {
