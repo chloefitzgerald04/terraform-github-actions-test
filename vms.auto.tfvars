@@ -43,7 +43,7 @@ default_vm = {
          "stop_on_destroy"                                      = true
          "startup"                                              = false
          "boot_order"                                           = ["scsi0", "ide2", "net0"]
-         "clone"                                                = "100"
+         "clone"                                                = "flatcar-template"
          "pxe"                                                  = true
          "cdrom" = {
              "iso"                                              = "NAS:iso/archlinux-2024.06.01-x86_64.iso" 
@@ -62,7 +62,6 @@ default_vm = {
 
 iso_vms= {
      "VM1" = {
-         "disabled" = true
          "name" = "01"
          "node" = "SA-MS01"
          "cpu" = {
@@ -71,8 +70,6 @@ iso_vms= {
          "memory" = {
             "dedicated" = 4096
          }
-         "pxe" = true
-         "clone" = "100"
          "bios" = "seabios"
          "tpm" = {
             "enabled" = false
@@ -98,7 +95,6 @@ iso_vms= {
      "flatcar-template2" = {
          "name" = "flatcar-template2"
          "node" = "SA-MS01"
-         "template" = true
          "cpu" = {
             "vcpus" = 2
          }
@@ -106,7 +102,6 @@ iso_vms= {
             "dedicated" = 4096
          }
          "clone" = "flatcar-template"
-         "pxe" = false
          "bios" = "seabios"
          "network_devices" = {
             "0" = {

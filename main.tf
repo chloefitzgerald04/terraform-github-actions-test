@@ -37,8 +37,7 @@ module "proxmox_vm" {
   source           = "./modules/vms-bpg"
   iso_vms          = var.iso_vms
   default_vm       = var.default_vm
-  custom_templates = var.custom_templates
-  template_id = module.proxmox_template.resource_proxmox_virtual_environment_vm_example_id
+  template_id      = module.proxmox_template.out_template_id
 
 }
 
