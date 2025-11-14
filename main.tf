@@ -24,12 +24,19 @@ terraform {
   }
 }
 
+
+module "proxmox_import" {
+  source           = "./modules/imports"
+  import_disks          = var.import_disks
+  default_import        = var.default_import
+}
+
+
 module "proxmox_template" {
   source           = "./modules/templates"
   custom_templates          = var.custom_templates
   default_templates = var.default_templates
-
-
+  imported_disk     = module.proxmox_import.out_import_id
 }
 
 

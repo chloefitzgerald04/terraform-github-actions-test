@@ -69,9 +69,17 @@ custom_templates = {
          "memory" = {
             "dedicated" = 4096
          }
+         # "import" = {
+         #       "import_from" = "https://stable.release.flatcar-linux.net/amd64-usr/current/flatcar_production_proxmoxve_image.img"
+         #       "datastore_id" = "local-lvm"
+         # }
          "import" = {
-               "import_from" = "https://stable.release.flatcar-linux.net/amd64-usr/current/flatcar_production_proxmoxve_image.img"
-               "datastore_id" = "local-lvm"
+            "0" = {
+               "name" = "flatcar-proxmox2.qcow2"
+               "size" = "20"
+               "datastore" = "local-lvm"
+               "interface" = "scsi0"
+            }
          }
          "pxe" = true
          "bios" = "seabios"

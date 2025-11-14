@@ -9,15 +9,15 @@ terraform {
 
 
 ### Only present if there is an "import" variable in the vm config in tfvars file
-resource "proxmox_virtual_environment_download_file" "imported_disk" {
-    provider                  = bpg
-    for_each                  = {for k, v in var.custom_templates : k => v if contains(keys(v), "import")}
-    content_type              = "import"
-    datastore_id              = "local"
-    file_name                 = "${each.value.name}.qcow2"
-    node_name                 = try(each.value.node, var.default_templates.node, null)
-    url                       = try(each.value.import.import_from, null)
-}
+# resource "proxmox_virtual_environment_download_file" "imported_disk" {
+#     provider                  = bpg
+#     for_each                  = {for k, v in var.custom_templates : k => v if contains(keys(v), "import")}
+#     content_type              = "import"
+#     datastore_id              = "local"
+#     file_name                 = "${each.value.name}.qcow2"
+#     node_name                 = try(each.value.node, var.default_templates.node, null)
+#     url                       = try(each.value.import.import_from, null)
+# }
 
 
 resource "proxmox_virtual_environment_vm" "custom_templates" {
@@ -97,9 +97,11 @@ resource "proxmox_virtual_environment_vm" "custom_templates" {
         for_each = try(each.value.import, {})
         iterator = import
         content {
-            interface         = "scsi0"
-            import_from       = proxmox_virtual_environment_download_file.imported_disk[each.value.name].id
-            size = 20
+            interface         =  import.value.interface
+            #import_from       = proxmox_virtual_environment_download_file.imported_disk[each.value.name].id
+            import_from = var.imported_disk.id["${import.value.name}"]
+            size = import.value.size
+            datastore_id = import.value.datastore
         }
     }
     dynamic "disk" {

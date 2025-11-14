@@ -13,3 +13,4 @@ variable "clone_vms" {
 variable "template_id" {
     default = {}
 }
+
