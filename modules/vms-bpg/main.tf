@@ -17,7 +17,6 @@ resource "proxmox_virtual_environment_download_file" "imported_disk" {
     file_name                 = "${each.value.name}.qcow2"
     node_name                 = try(each.value.node, var.default_vm.node, null)
     url                       = try(each.value.import.import_from, null)
-    #url          = "https://cloud.centos.org/centos/8-stream/x86_64/images/CentOS-Stream-GenericCloud-8-latest.x86_64.qcow2"
 }
 
 
@@ -40,9 +39,8 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
     on_boot                   = try(each.value.on_boot, var.default_vm.on_boot, null)
 
     dynamic "clone" {
-        for_each = try(each.value.clone, var.default_vm.clone) != false && try(each.value.pxe) != true? [1] : []
+        for_each = try(each.value.clone, null) != null && try(each.value.pxe, null) != true? [1] : []
         content {
-             #vm_id            = try(each.value.clone, var.default_vm.clone, null)
              vm_id            = var.template_id.id["${each.value.clone}"]
         }
     }
@@ -160,11 +158,6 @@ resource "proxmox_virtual_environment_vm" "iso_vms" {
              model           = try(nic.value["model"], var.default_vm.network_devices[0].model, null)
              mac_address     = try(nic.value["mac_address"], var.default_vm.network_devices[0].mac_address, null)
              mtu             = try(nic.value["mtu"], var.default_vm.network_devices[0].mtu, null)
-            # bridge          = try(nic.value["bridge"], var.default_vm.network_devices.0.bridge, null)
-            # vlan_id         = try(nic.value["vlan_id"], var.default_vm.network_devices.0.vlan_id, null)
-            # model           = try(nic.value["model"], var.default_vm.network_devices.0.model, null)
-            # mac_address     = try(nic.value["mac_address"], var.default_vm.network_devices.0.mac_address, null)
-            # mtu             = try(nic.value["mtu"], var.default_vm.network_devices.0.mtu, null)
         }
     }
 }

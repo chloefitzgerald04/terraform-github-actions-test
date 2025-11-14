@@ -42,8 +42,5 @@ variable "default_templates" {
     default = {}
 }
 
-variable "template_id" {
-    default = {}
-}
 
 
